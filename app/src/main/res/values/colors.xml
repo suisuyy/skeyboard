@@ -18,11 +18,12 @@
 */
 -->
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
     <color name="candidate_normal">#FF000000</color>
-    <color name="candidate_recommended">#000000</color>
+    <color name="candidate_recommended">#FFE35900</color>
     <color name="candidate_other">#ff808080</color>
-    <color name="candidate_background">#bbffffff</color>
+    <color name="candidate_background">#bbffffff</color> 
+    <color name="white">#ffffffff</color>
+    <color name="key_bg_color">#fffce4ec</color>
+    <color name="key_fg_color">#ff111100</color>
+    <color name="key_popup_fg_color">#977777</color>
 </resources>
