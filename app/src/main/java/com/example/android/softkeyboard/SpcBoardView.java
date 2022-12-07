@@ -148,7 +148,6 @@ public class SpcBoardView extends KeyboardView {
                 keyLabel=keyLabel.toUpperCase();
             }
             
-			
 			if(keyLabel.length()>2){
 				mainPaint.setTextSize(mainPaint.getTextSize()*0.7f);
 			}

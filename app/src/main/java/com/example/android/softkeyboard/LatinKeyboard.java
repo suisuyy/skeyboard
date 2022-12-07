@@ -87,6 +87,7 @@ public class LatinKeyboard extends Keyboard {
         if (visible) {
             // The language switch key should be visible. Restore the size of the mode change key
             // and language switch key using the saved layout.
+            if(mModeChangeKey==null){return;}
             mModeChangeKey.width = mSavedModeChangeKey.width;
             mModeChangeKey.x = mSavedModeChangeKey.x;
             mLanguageSwitchKey.width = mSavedLanguageSwitchKey.width;
@@ -115,7 +116,7 @@ public class LatinKeyboard extends Keyboard {
             case EditorInfo.IME_ACTION_GO:
                 mEnterKey.iconPreview = null;
                 mEnterKey.icon = null;
-                mEnterKey.label = res.getText(R.string.label_go_key);
+              //  mEnterKey.label = res.getText(R.string.label_go_key);
                 break;
             case EditorInfo.IME_ACTION_NEXT:
                 mEnterKey.iconPreview = null;
@@ -124,16 +125,16 @@ public class LatinKeyboard extends Keyboard {
                 break;
             case EditorInfo.IME_ACTION_SEARCH:
                 mEnterKey.icon = res.getDrawable(R.drawable.sym_keyboard_search);
-                mEnterKey.label = null;
+              //  mEnterKey.label = null;
                 break;
             case EditorInfo.IME_ACTION_SEND:
                 mEnterKey.iconPreview = null;
                 mEnterKey.icon = null;
-                mEnterKey.label = res.getText(R.string.label_send_key);
+              //  mEnterKey.label = res.getText(R.string.label_send_key);
                 break;
             default:
                 mEnterKey.icon = res.getDrawable(R.drawable.sym_keyboard_return);
-                mEnterKey.label = null;
+               // mEnterKey.label = null;
                 break;
         }
     }
