@@ -40,6 +40,7 @@ import android.view.inputmethod.InputMethodSubtype;
 
 import java.util.ArrayList;
 import java.util.List;
+import android.widget.Toast;
 
 /**
  * Example of writing an input method for a soft keyboard.  This code is
@@ -63,27 +64,27 @@ public class SoftKeyboard extends InputMethodService
     static final boolean PROCESS_HARD_KEYS = true;
     static final int kEYBOARDXML= R.xml.qwerty;
 
-    private InputMethodManager mInputMethodManager;
+     InputMethodManager mInputMethodManager;
 
-    private LatinKeyboardView mInputView;
-    private CandidateView mCandidateView;
-    private CompletionInfo[] mCompletions;
+     KeyboardView mInputView;
+     CandidateView mCandidateView;
+     CompletionInfo[] mCompletions;
     
-    private StringBuilder mComposing = new StringBuilder();
-    private boolean mPredictionOn;
-    private boolean mCompletionOn;
-    private int mLastDisplayWidth;
-    private boolean mCapsLock;
-    private long mLastShiftTime;
-    private long mMetaState;
+     StringBuilder mComposing = new StringBuilder();
+     boolean mPredictionOn;
+     boolean mCompletionOn;
+     int mLastDisplayWidth;
+     boolean mCapsLock;
+     long mLastShiftTime;
+     long mMetaState;
     
-    private LatinKeyboard mSymbolsKeyboard;
-    private LatinKeyboard mSymbolsShiftedKeyboard;
-    private LatinKeyboard mQwertyKeyboard;
+     LatinKeyboard mSymbolsKeyboard;
+     LatinKeyboard mSymbolsShiftedKeyboard;
+     LatinKeyboard mQwertyKeyboard;
     
-    private LatinKeyboard mCurKeyboard;
+     LatinKeyboard mCurKeyboard;
     
-    private String mWordSeparators;
+     String mWordSeparators;
     
     /**
      * Main initialization of the input method component.  Be sure to call
@@ -158,7 +159,7 @@ public class SoftKeyboard extends InputMethodService
         return mInputView;
     }
 
-    private void setLatinKeyboard(LatinKeyboard nextKeyboard) {
+     void setLatinKeyboard(LatinKeyboard nextKeyboard) {
         final boolean shouldSupportLanguageSwitchKey =
                 mInputMethodManager.shouldOfferSwitchingToNextInputMethod(getToken());
         nextKeyboard.setLanguageSwitchKeyVisibility(shouldSupportLanguageSwitchKey);
@@ -355,7 +356,7 @@ public class SoftKeyboard extends InputMethodService
      * InputConnection.  It is only needed when using the
      * PROCESS_HARD_KEYS option.
      */
-    private boolean translateKeyDown(int keyCode, KeyEvent event) {
+     boolean translateKeyDown(int keyCode, KeyEvent event) {
         mMetaState = MetaKeyKeyListener.handleKeyDown(mMetaState,
                 keyCode, event);
         int c = event.getUnicodeChar(MetaKeyKeyListener.getMetaState(mMetaState));
@@ -393,6 +394,7 @@ public class SoftKeyboard extends InputMethodService
      * continue to the app.
      */
     @Override public boolean onKeyDown(int keyCode, KeyEvent event) {
+        
         switch (keyCode) {
             case KeyEvent.KEYCODE_BACK:
                 // The InputMethodService already takes care of the back
@@ -476,9 +478,9 @@ public class SoftKeyboard extends InputMethodService
     /**
      * Helper function to commit any text being composed in to the editor.
      */
-    private void commitTyped(InputConnection inputConnection) {
+     void commitTyped(InputConnection inputConnection) {
         if (mComposing.length() > 0) {
-            inputConnection.commitText(mComposing, mComposing.length());
+            inputConnection.commitText(mComposing, 1);
             mComposing.setLength(0);
             updateCandidates();
         }
@@ -488,7 +490,7 @@ public class SoftKeyboard extends InputMethodService
      * Helper to update the shift state of our keyboard based on the initial
      * editor state.
      */
-    private void updateShiftKeyState(EditorInfo attr) {
+     void updateShiftKeyState(EditorInfo attr) {
         if (attr != null 
                 && mInputView != null && mQwertyKeyboard == mInputView.getKeyboard()) {
             int caps = 0;
@@ -503,7 +505,7 @@ public class SoftKeyboard extends InputMethodService
     /**
      * Helper to determine if a given character code is alphabetic.
      */
-    private boolean isAlphabet(int code) {
+     boolean isAlphabet(int code) {
         if (Character.isLetter(code)) {
             return true;
         } else {
@@ -514,7 +516,7 @@ public class SoftKeyboard extends InputMethodService
     /**
      * Helper to send a key down / key up pair to the current editor.
      */
-    private void keyDownUp(int keyEventCode) {
+     void keyDownUp(int keyEventCode) {
         getCurrentInputConnection().sendKeyEvent(
                 new KeyEvent(KeyEvent.ACTION_DOWN, keyEventCode));
         getCurrentInputConnection().sendKeyEvent(
@@ -524,7 +526,7 @@ public class SoftKeyboard extends InputMethodService
     /**
      * Helper to send a character to the editor as raw key events.
      */
-    private void sendKey(int keyCode) {
+     void sendKey(int keyCode) {
         switch (keyCode) {
             case '\n':
                 keyDownUp(KeyEvent.KEYCODE_ENTER);
@@ -540,7 +542,7 @@ public class SoftKeyboard extends InputMethodService
     }
 
     // Implementation of KeyboardViewListener
-
+ 
     public void onKey(int primaryCode, int[] keyCodes) {
         if (isWordSeparator(primaryCode)) {
             // Handle separator
@@ -592,7 +594,7 @@ public class SoftKeyboard extends InputMethodService
      * text.  This will need to be filled in by however you are determining
      * candidates.
      */
-    private void updateCandidates() {
+     void updateCandidates() {
         if (!mCompletionOn) {
             if (mComposing.length() > 0) {
                 ArrayList<String> list = new ArrayList<String>();
@@ -616,7 +618,7 @@ public class SoftKeyboard extends InputMethodService
         }
     }
     
-    private void handleBackspace() {
+     void handleBackspace() {
         final int length = mComposing.length();
         if (length > 1) {
             mComposing.delete(length - 1, length);
@@ -632,7 +634,7 @@ public class SoftKeyboard extends InputMethodService
         updateShiftKeyState(getCurrentInputEditorInfo());
     }
 
-    private void handleShift() {
+     void handleShift() {
         if (mInputView == null) {
             return;
         }
@@ -653,7 +655,7 @@ public class SoftKeyboard extends InputMethodService
         }
     }
     
-    private void handleCharacter(int primaryCode, int[] keyCodes) {
+     void handleCharacter(int primaryCode, int[] keyCodes) {
         if (isInputViewShown()) {
             if (mInputView.isShifted()) {
                 primaryCode = Character.toUpperCase(primaryCode);
@@ -670,13 +672,13 @@ public class SoftKeyboard extends InputMethodService
         }
     }
 
-    private void handleClose() {
+     void handleClose() {
         commitTyped(getCurrentInputConnection());
         requestHideSelf(0);
         mInputView.closing();
     }
 
-    private IBinder getToken() {
+     IBinder getToken() {
         final Dialog dialog = getWindow();
         if (dialog == null) {
             return null;
@@ -688,11 +690,11 @@ public class SoftKeyboard extends InputMethodService
         return window.getAttributes().token;
     }
 
-    private void handleLanguageSwitch() {
+     void handleLanguageSwitch() {
         mInputMethodManager.switchToNextInputMethod(getToken(), false /* onlyCurrentIme */);
     }
 
-    private void checkToggleCapsLock() {
+     void checkToggleCapsLock() {
         long now = System.currentTimeMillis();
         if (mLastShiftTime + 800 > now) {
             mCapsLock = !mCapsLock;
@@ -702,7 +704,7 @@ public class SoftKeyboard extends InputMethodService
         }
     }
     
-    private String getWordSeparators() {
+     String getWordSeparators() {
         return mWordSeparators;
     }
     
@@ -754,4 +756,23 @@ public class SoftKeyboard extends InputMethodService
     
     public void onRelease(int primaryCode) {
     }
+    
+    // Implementation of KeyboardViewListener with meta info so we can send ctrl key
+     void sendKeyDown(InputConnection ic, int key, int meta) {
+        long now = System.currentTimeMillis();
+        if (ic != null) ic.sendKeyEvent(new KeyEvent(
+                                            now, now, KeyEvent.ACTION_DOWN, key, 0, meta));
+    }
+
+     void sendKeyUp(InputConnection ic, int key, int meta) {
+        long now = System.currentTimeMillis();
+        if (ic != null) ic.sendKeyEvent(new KeyEvent(
+                                            now, now, KeyEvent.ACTION_UP, key, 0, meta));
+    }
+     void sendKey(InputConnection ic,int key,int meta){
+        sendKeyDown(ic,key,meta);
+        sendKeyUp(ic,key,meta);
+    }
+    
+    
 }

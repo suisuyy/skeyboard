@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	android:id="@+id/keyboardParent"
+	android:orientation="vertical"
+	android:background="@color/white">
+
+	<TextView
+		android:layout_height="wrap_content"
+		android:layout_width="wrap_content"
+		android:text="Text"
+		android:id="@+id/debugtv"/>
+
+	<com.example.android.softkeyboard.SpcBoardView
+		android:id="@+id/keyboard"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_alignParentBottom="true"
+		android:background="@color/key_bg_color"
+		android:keyBackground="@color/key_bg_color"
+		android:keyTextColor="@color/key_fg_color"
+		android:supportsInlineSuggestions="false">
+
+	</com.example.android.softkeyboard.SpcBoardView>
+
+</LinearLayout>
+

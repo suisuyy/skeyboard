@@ -38,8 +38,10 @@ import android.view.inputmethod.InputMethodManager;
 import android.view.inputmethod.InputMethodSubtype;
 
 
+
 import java.util.ArrayList;
 import java.util.List;
+import android.widget.*;
 
 /**
  * Example of writing an input method for a soft keyboard.  This code is
@@ -48,5 +50,242 @@ import java.util.List;
  * a basic example for how you would get started writing an input method, to
  * be fleshed out as appropriate.
  */
-public class SpcSoftBoard extends SoftKeyboard{}
+public class SpcSoftBoard extends SoftKeyboard
+{
+
+    boolean mIsCtrled=false;
+    boolean mIsAlted=false;
+    boolean misShift=false;
+    boolean mIsFloat=false;
+    
+    int mstartKeyCode;
+    int mEndKeycode;
+
+
+
+
+    Window inputWindow;
+    TextView debugtv;
+
+
+
+
+    /**
+     * This is the point where you can do all of your UI initialization.  It
+     * is called after creation and any configuration change.
+     */
+    @Override public void onInitializeInterface()
+    {
+        final Context displayContext = getDisplayContext();
+
+        if (super.mQwertyKeyboard != null)
+        {
+            // Configuration changes can happen after the keyboard gets recreated,
+            // so we need to be able to re-build the keyboards if the available
+            // space has changed.
+            int displayWidth = getMaxWidth();
+            if (displayWidth == super.mLastDisplayWidth) return;
+            super.mLastDisplayWidth = displayWidth;
+        }
+        super.mQwertyKeyboard = new LatinKeyboard(displayContext, R.xml.spc);
+        super. mSymbolsKeyboard = new LatinKeyboard(displayContext, R.xml.spc);
+        super.  mSymbolsShiftedKeyboard = new LatinKeyboard(displayContext, R.xml.spc);
+    }
+
+    /**
+     * Called by the framework when your view for creating input needs to
+     * be generated.  This will be called the first time your input method
+     * is displayed, and every time it needs to be re-created such as due to
+     * a configuration change.
+     */
+    @Override public View onCreateInputView()
+    {
+        final LinearLayout keyboardParent = (LinearLayout) getLayoutInflater().inflate(
+            R.layout.spcinput, null);
+        super.  mInputView = (SpcBoardView) keyboardParent.findViewById(R.id.keyboard);
+        this.debugtv = keyboardParent.findViewById(R.id.debugtv);
+
+        super.  mInputView.setOnKeyboardActionListener(this);
+        super.   setLatinKeyboard(super. mQwertyKeyboard);
+
+        inputWindow = super.getWindow().getWindow();
+        return   keyboardParent;
+    }
+
+
+    // Implementation of KeyboardViewListener
+
+
+    @Override
+    public void onPress(int i)
+    {
+        mstartKeyCode = i;
+        System.out.println("Softkeyboard.java: onPress");
+    }
+
+    @Override
+    public void onRelease(int i)
+    {
+        System.out.println("Softkeyboard.java: onRelease");
+
+        mEndKeycode = i;
+        return;
+
+    }
+
+    @Override
+    public void onKey(int primaryCode, int[] keyCodes)
+    {
+        this.debugtv.setText("" + (int)mstartKeyCode);
+        if (mstartKeyCode == -51)
+        {
+            System.out.println("alt key pressed");
+            mIsAlted = !mIsAlted;
+        }
+
+        else if (mstartKeyCode == -52)
+        {
+            System.out.println("ctrl key pressed");
+            mIsCtrled = !mIsCtrled;
+
+        }
+        else if (mstartKeyCode == - 53)
+        {
+            misShift = !misShift;
+        } 
+
+        else if (mstartKeyCode == Keyboard.KEYCODE_MODE_CHANGE
+                 && mInputView != null)
+        {
+            Keyboard current = mInputView.getKeyboard();
+            if (current == mSymbolsKeyboard || current == mSymbolsShiftedKeyboard)
+            {
+                setLatinKeyboard(mQwertyKeyboard);
+            }
+            else
+            {
+                setLatinKeyboard(mSymbolsKeyboard);
+                mSymbolsKeyboard.setShifted(false);
+            }
+        } 
+        else
+        {
+            handleCharacter(primaryCode, keyCodes);
+        }
+    }
+
+
+
+    @Override
+    public void swipeDown()
+    {
+        this.debugtv.setText("swipedow");
+        WindowManager.LayoutParams  lparas =inputWindow.getAttributes();
+        lparas.x = 100;
+        lparas.y = 200;
+        lparas.width=800;
+        lparas.height=600;
+        inputWindow.setAttributes(lparas);
+    }
+
+
+
+    @Override
+    public void onComputeInsets(Insets outInsets)
+    {
+
+        outInsets.contentTopInsets = 1000;
+
+        // outInsets.visibleTopInsets =  getNavBarHeight();
+    } 
+
+    @Override
+    void handleCharacter(int primaryCode, int[] keyCodes)
+    {
+        System.out.println("handleCharatrer execut");
+        int meta=0;
+        if (mIsCtrled)
+        {
+            mIsCtrled = !mIsCtrled;
+
+            System.out.println("ctrled will");
+            meta = meta | KeyEvent.META_CTRL_ON ;
+        }
+        if (mIsAlted)
+        {
+            mIsAlted = !mIsAlted;
+
+            System.out.println("alted will");
+            meta = meta | KeyEvent.META_ALT_ON ;
+        }
+        if (misShift)
+        {
+            meta = meta | KeyEvent.META_SHIFT_ON;
+        }
+
+
+        if (mstartKeyCode == 8)
+        {
+            super. sendKey(getCurrentInputConnection(), KeyEvent.KEYCODE_DEL, meta);
+
+            ((SpcBoardView)mInputView).gesture = "";
+
+        }
+
+
+        else if (((SpcBoardView)mInputView).gesture == ((SpcBoardView)mInputView).GESTRUE_SLIDD_DOWN)
+        {
+            ((SpcBoardView)mInputView).gesture = "";
+            List<Keyboard.Key> allKeys=mQwertyKeyboard.getKeys();
+            for (Keyboard.Key key :
+            allKeys)
+            {
+                if (key.codes[0] == mstartKeyCode)
+                {
+                    getCurrentInputConnection().commitText(String.valueOf(key.popupCharacters), 1);
+                    return;
+                }
+
+            }
+        }
+        else if (((SpcBoardView)mInputView).gesture == ((SpcBoardView)mInputView).GESTRUE_SLIDD_UP)
+        {
+            ((SpcBoardView)mInputView).gesture = "";
+            getCurrentInputConnection().commitText(String.valueOf((char)mstartKeyCode).toUpperCase(), 1);
+
+        }
+        else
+        {
+
+            if (mstartKeyCode == 27)
+            {
+                super.sendKey(getCurrentInputConnection(), KeyEvent.KEYCODE_ESCAPE, meta);
+            }
+            else if (mstartKeyCode == '\n')
+            {
+                super. sendKey(getCurrentInputConnection(), KeyEvent.KEYCODE_ENTER, meta);
+            }
+            else if (mstartKeyCode == '\t')
+            {
+                super. sendKey(getCurrentInputConnection(), KeyEvent.KEYCODE_TAB, meta);
+            }
+            else if (mstartKeyCode == ' ')
+            {
+                super.  sendKey(getCurrentInputConnection(), KeyEvent.KEYCODE_SPACE, meta);
+            }
+            else
+            {
+                String StringOfkey=String.valueOf((char)mstartKeyCode).toUpperCase();
+                super. sendKey(getCurrentInputConnection(), KeyEvent.keyCodeFromString("KEYCODE_" + StringOfkey), meta);
+            } 
+
+
+        }
+        ((SpcBoardView)mInputView).gesture = "";
+        return;
+
+
+    }
+
+}
 

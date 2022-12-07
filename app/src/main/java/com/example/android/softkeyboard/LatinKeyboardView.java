@@ -53,3 +53,6 @@ public class LatinKeyboardView extends KeyboardView {
         invalidateAllKeys();
     }
 }
+
+
+

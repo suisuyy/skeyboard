@@ -10,7 +10,7 @@
         </service>
         
         <service android:name="SpcSoftBoard"
-            
+            android:label="@string/sime_name"
             android:permission="android.permission.BIND_INPUT_METHOD">
             <intent-filter>
                 <action android:name="android.view.InputMethod" />
