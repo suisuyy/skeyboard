@@ -66,7 +66,7 @@
     </Row>
     
     <Row>
-        <Key android:codes="-53" android:keyLabel="shift"
+        <Key android:codes="-53" android:keyLabel="Shift"
             android:keyWidth="15%p" android:isModifier="true"
             android:isSticky="true" android:keyEdgeFlags="left"/>
         <Key android:codes="122" android:keyLabel="z" android:popupKeyboard="@xml/qwerty" />
@@ -75,7 +75,7 @@
         <Key android:codes="118" android:keyLabel="v" android:popupCharacters=";"  android:popupKeyboard="@xml/popup_keyboard_template"/>
         <Key android:codes="98" android:keyLabel="b" android:popupCharacters="."  android:popupKeyboard="@xml/popup_keyboard_template"/>
         <Key android:codes="110" android:keyLabel="n" android:popupCharacters="/"  android:popupKeyboard="@xml/popup_keyboard_template"/>
-        <Key android:codes="109" android:keyLabel="m" android:popupCharacters="\?tt"  android:popupKeyboard="@xml/popup_keyboard_template"/>
+        <Key android:codes="109" android:keyLabel="m" android:popupCharacters="\?"  android:popupKeyboard="@xml/popup_keyboard_template"/>
         <Key android:codes="8" android:keyLabel="&lt;&lt;&lt;"
             android:keyWidth="15%p" android:keyEdgeFlags="right"
             android:isRepeatable="true"/>

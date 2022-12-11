@@ -1,8 +1,25 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" 
-    package="com.example.android.softkeyboard">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.suisuy.skeyboard.softkeyboard">
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
+
     <application android:label="@string/ime_name">
+        <activity android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
         <service android:name="SoftKeyboard"
-            android:permission="android.permission.BIND_INPUT_METHOD">
+            android:permission="android.permission.BIND_INPUT_METHOD"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.view.InputMethod" />
             </intent-filter>
@@ -11,19 +28,29 @@
         
         <service android:name="SpcSoftBoard"
             android:label="@string/sime_name"
-            android:permission="android.permission.BIND_INPUT_METHOD">
+            android:permission="android.permission.BIND_INPUT_METHOD"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.view.InputMethod" />
             </intent-filter>
             <meta-data android:name="android.view.im" android:resource="@xml/method" />
         </service>
-        
 
-        <activity android:name=".ImePreferences" android:label="@string/settings_name">
+        <service
+            android:name="PinyinKeyboard"
+            android:label="pinyin"
+
+            android:permission="android.permission.BIND_INPUT_METHOD"
+            android:exported="true">
+
+
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
+                <action android:name="android.view.InputMethod" />
             </intent-filter>
-        </activity>
+            <meta-data android:name="android.view.im" android:resource="@xml/method" />
+        </service>
+
+
 
     </application>
     

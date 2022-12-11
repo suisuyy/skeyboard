@@ -19,13 +19,37 @@
 		android:layout_width="wrap_content"
 		android:ems="10"
 		android:hint="secendtextview"/>
-    
-    <EditText
-        android:layout_height="wrap_content"
-        android:inputType="date"
-        android:layout_width="wrap_content"
-        android:ems="10"
-		android:hint=""/>
+
+
+	<Button
+		android:id="@+id/settingButtonIME"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="IME settings"
+		/>
+	<Button
+		android:id="@+id/allowFilePermitionButton"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="Allow File access"
+		/>
+
+
+	<Button
+		android:id="@+id/changeIMEButton"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="select keyboard"
+	/>
+	<Button
+		android:id="@+id/downloadpy"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="Download pinyin data"
+		/>
+
+
+
 
 </LinearLayout>
 
