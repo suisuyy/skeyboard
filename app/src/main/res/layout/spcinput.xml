@@ -13,7 +13,7 @@
 		android:text="Text"
 		android:id="@+id/debugtv"/>
 
-	<com.example.android.softkeyboard.SpcBoardView
+	<com.suisuy.skeyboard.softkeyboard.SpcBoardView
 		android:id="@+id/keyboard"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
@@ -21,9 +21,9 @@
 		android:background="@color/key_bg_color"
 		android:keyBackground="@color/key_bg_color"
 		android:keyTextColor="@color/key_fg_color"
-		android:supportsInlineSuggestions="false">
+		>
 
-	</com.example.android.softkeyboard.SpcBoardView>
+	</com.suisuy.skeyboard.softkeyboard.SpcBoardView>
 
 </LinearLayout>
 

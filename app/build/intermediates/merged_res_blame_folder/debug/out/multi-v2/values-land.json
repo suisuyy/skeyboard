@@ -1,0 +1,36 @@
+{
+    "logs": [
+        {
+            "outputFile": "com.suisuy.skeyboard.softkeyboard.app-mergeDebugResources-7:/values-land/values-land.xml",
+            "map": [
+                {
+                    "source": "/home/suisuy/.gradle/caches/transforms-3/16b86fed26011bc89c56c7ce0466e745/transformed/appcompat-1.1.0/res/values-land/values-land.xml",
+                    "from": {
+                        "startLines": "2,3,4",
+                        "startColumns": "4,4,4",
+                        "startOffsets": "55,125,196",
+                        "endColumns": "69,70,67",
+                        "endOffsets": "120,191,259"
+                    }
+                },
+                {
+                    "source": "/mnt/kbmain/project/skeyboard/app/src/main/res/values-land/dimens.xml",
+                    "from": {
+                        "startLines": "21",
+                        "startColumns": "4",
+                        "startOffsets": "692",
+                        "endColumns": "42",
+                        "endOffsets": "730"
+                    },
+                    "to": {
+                        "startLines": "5",
+                        "startColumns": "4",
+                        "startOffsets": "264",
+                        "endColumns": "42",
+                        "endOffsets": "302"
+                    }
+                }
+            ]
+        }
+    ]
+}
