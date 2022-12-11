@@ -26,4 +26,7 @@
     <color name="key_bg_color">#fffce4ec</color>
     <color name="key_fg_color">#ff111100</color>
     <color name="key_popup_fg_color">#977777</color>
+    <color name="colorPrimaryDark">#B67975</color>
+    <color name="colorPrimary">#A35D58</color>
+    <color name="colorAccent">#D57F78</color>
 </resources>
