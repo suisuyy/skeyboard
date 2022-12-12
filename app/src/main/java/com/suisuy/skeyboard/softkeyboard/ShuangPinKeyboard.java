@@ -19,8 +19,8 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class PinyinKeyboard extends SpcSoftBoard {
-    PinyinKeyboard that=this;
+public class ShuangPinKeyboard extends SpcSoftBoard {
+    ShuangPinKeyboard that=this;
     Boolean isShuangPin=true;
     String mTypedLetters="";
     List<String> mCandidateList;
@@ -32,7 +32,7 @@ public class PinyinKeyboard extends SpcSoftBoard {
     Button mTypedView;
     Button mShuangPinButton;
 
-    public PinyinKeyboard() {
+    public ShuangPinKeyboard() {
 
         super();
     }
@@ -52,7 +52,7 @@ public class PinyinKeyboard extends SpcSoftBoard {
         this.debugtv = (TextView) keyboardParent.findViewById(R.id.debugtv);
         this.mPinyinCandidateView =(LinearLayout) keyboardParent.findViewById(R.id.hscrollLayout);
         this.mTypedView=createCandidate("");
-        this.mShuangPinButton=createCandidate(("shuangpin"));
+        this.mShuangPinButton=createCandidate(("双拼"));
 
         super.mInputView.setOnKeyboardActionListener(this);
         super.setLatinKeyboard(super.mQwertyKeyboard);
@@ -78,7 +78,18 @@ public class PinyinKeyboard extends SpcSoftBoard {
 
     @Override
     void handleCharacter(int primaryCode, int[] keyCodes) {
-        if(mstartKeyCode==' '){
+
+        if (((SpcBoardView) mInputView).gesture == ((SpcBoardView) mInputView).GESTRUE_SLIDD_DOWN){
+            super.handleCharacter(primaryCode,keyCodes);
+        }
+        else if (((SpcBoardView) mInputView).gesture == ((SpcBoardView) mInputView).GESTRUE_SLIDD_UP){
+            super.handleCharacter(primaryCode,keyCodes);
+        }
+        else if(mIsCtrled | mIsAlted){
+            super.handleCharacter(primaryCode,keyCodes);
+        }
+
+        else if(mstartKeyCode==' '){
             if(super.mIsCtrled){
                 handleLanguageSwitch();
             }
@@ -110,7 +121,7 @@ public class PinyinKeyboard extends SpcSoftBoard {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(text=="shuangpin"){
+                if(text=="双拼"){
                     that.isShuangPin=true;
                     return;
                 }
@@ -147,7 +158,9 @@ public class PinyinKeyboard extends SpcSoftBoard {
     void resetCandidatesView(){
 
         this.mPinyinCandidateView.removeAllViews();
-        this.mPinyinCandidateView.addView(this.mShuangPinButton);
+        if(this.mTypedLetters.length()<=0){
+            this.mPinyinCandidateView.addView(this.mShuangPinButton);
+        }
         this.mPinyinCandidateView.addView(this.mTypedView);
 
     }
@@ -164,49 +177,49 @@ public class PinyinKeyboard extends SpcSoftBoard {
 
             if(newTyped.length()<=0){
                 this.mCandidateList=new ArrayList<>();
+                return;
             }
 
             else{
                 List oldCandidatlist=this.mCandidateList;
                 try {
-                    this.mCandidateList=Util.createStrListFromJsonArray( this.mPyDict.getJSONArray(this.mTypedLetters) );
+                    this.mCandidateList=Util.createStrListFromJsonArray(
+                            this.mPyDict.getJSONArray(this.mTypedLetters)
+                    );
                 } catch (JSONException e) {
                     e.printStackTrace();
                     this.mCandidateList=oldCandidatlist;
+                }
+
+
+                if(this.mCandidateList==oldCandidatlist || this.mCandidateList.toArray().length<=0){
                     this.mCandidateList=Util.createStrListFromJsonArray(  Util.getCandidatesBaiduPinyinAsJSONArray(this.mTypedLetters) );
                     this.mCandidateList.addAll( Util.createStrListFromJsonArray(  Util.getCandidatesBaiduPinyinAsJSONArray(Util.convertShuangPinToPinyin(this.mTypedLetters) ) ) );
+                    that.mMainThreadHandler.post(()->{
+                        that.displayCandidates();
+                    });
                     if(this.isShuangPin){
+                        this.mCandidateList.addAll( Util.getCandidatesFromGoogleSPin(this.mTypedLetters) );
+                        JSONObject tmpObj=new JSONObject();
+                        try {
+                            tmpObj.put(this.mTypedLetters,Util.createJSONArrayFromStrList(this.mCandidateList));
+                            Util.savePinyinRecordToSdcard(tmpObj.toString());
 
-                        that.mMainThreadHandler.post(()->{
-                            that.displayCandidates();
-                        });
-                        if(this.mTypedLetters.length()%2==1){
-                            //do nothing,for shuangpin,firt letter neednt request
+                        } catch (JSONException ex) {
+                            ex.printStackTrace();
                         }
-                        else{
 
-                            this.mCandidateList.addAll( Util.getCandidatesFromGoogleSPin(this.mTypedLetters) );
-                            JSONObject tmpObj=new JSONObject();
-                            try {
-                                tmpObj.put(this.mTypedLetters,Util.createJSONArrayFromStrList(this.mCandidateList));
-                                Util.savePinyinRecordToSdcard(tmpObj.toString());
-
-                            } catch (JSONException ex) {
-                                ex.printStackTrace();
-                            }
-                        }
                     }
                     else{
-                        this.mCandidateList=Util.getCandidatesFromGooglePinyin(this.mTypedLetters);
+                        this.mCandidateList.addAll(
+                                Util.getCandidatesFromGooglePinyin(this.mTypedLetters)
+                        );
                     }
                     try {
                         this.mPyDict.put(this.mTypedLetters,Util.createJSONArrayFromStrList(this.mCandidateList) );
                     } catch (JSONException e1) {
                         e1.printStackTrace();
                     }
-                }
-                if(this.mCandidateList.toArray().length<=0){
-
                 }
 
             }
@@ -221,8 +234,13 @@ public class PinyinKeyboard extends SpcSoftBoard {
 
 
     void  initPydictObj(){
-        this.mPyDict=Util.getPinyinRecordFromSdcard();
-        System.out.println(this.mPyDict);
+        if(this.isShuangPin){
+            this.mPyDict=Util.getPinyinRecordFromSdcard();
+        }
+        else{
+            this.mPyDict=new JSONObject();
+        }
+
         return ;
     }
 }

@@ -253,14 +253,14 @@ public class SoftKeyboard extends InputMethodService
                 // We also want to look at the current state of the editor
                 // to decide whether our alphabetic keyboard should start out
                 // shifted.
-                updateShiftKeyState(attribute);
+//                updateShiftKeyState(attribute);
                 break;
                 
             default:
                 // For all unknown input types, default to the alphabetic
                 // keyboard with no special features.
                 mCurKeyboard = mQwertyKeyboard;
-                updateShiftKeyState(attribute);
+//                updateShiftKeyState(attribute);
         }
         
         // Update the label on the enter key, depending on what the application

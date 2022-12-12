@@ -30,8 +30,8 @@
         </service>
 
         <service
-            android:name="PinyinKeyboard"
-            android:label="pinyin"
+            android:name=".ShuangPinKeyboard"
+            android:label="双拼"
 
             android:permission="android.permission.BIND_INPUT_METHOD"
             android:exported="true">
@@ -44,6 +44,19 @@
         </service>
 
 
+     <service
+            android:name=".PinyinKeybaord"
+            android:label="拼音"
+
+            android:permission="android.permission.BIND_INPUT_METHOD"
+            android:exported="true">
+
+
+            <intent-filter>
+                <action android:name="android.view.InputMethod" />
+            </intent-filter>
+            <meta-data android:name="android.view.im" android:resource="@xml/method" />
+        </service>
 
     </application>
     

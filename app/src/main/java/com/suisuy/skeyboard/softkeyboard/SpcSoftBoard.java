@@ -92,6 +92,7 @@ public class SpcSoftBoard extends SoftKeyboard {
         super.setLatinKeyboard(super.mQwertyKeyboard);
 
         inputWindow = super.getWindow().getWindow();
+        this.debugtv.setVisibility(View.INVISIBLE);
         return keyboardParent;
     }
 
@@ -118,21 +119,21 @@ public class SpcSoftBoard extends SoftKeyboard {
     public void onKey(int primaryCode, int[] keyCodes) {
         this.debugtv.setText("" + (int) mstartKeyCode);
         if (mstartKeyCode == -51) {
+            updateAltState(!mIsAlted);
             System.out.println("alt key pressed");
-            mIsAlted = !mIsAlted;
             if(mIsAlted){
                 this.mMetaInfo=this.mMetaInfo| KeyEvent.META_ALT_ON;
             }
         } else if (mstartKeyCode == -52) {
             System.out.println("ctrl key pressed");
-            mIsCtrled = !mIsCtrled;
+            updateCtlState(!mIsCtrled);
             if(mIsCtrled){
                 this.mMetaInfo=this.mMetaInfo| KeyEvent.META_CTRL_ON;
             }
 
 
         } else if (mstartKeyCode == -53) {
-            misShift = !misShift;
+            updateShiftState(!misShift);
             if(misShift){
                 this.mMetaInfo=this.mMetaInfo| KeyEvent.META_SHIFT_ON;
             }
@@ -174,18 +175,18 @@ public class SpcSoftBoard extends SoftKeyboard {
         System.out.println("handleCharatrer execut");
         int meta = 0;
         if (mIsCtrled) {
-            mIsCtrled = !mIsCtrled;
+            updateCtlState(false);
 
             System.out.println("ctrled will");
             meta = meta | KeyEvent.META_CTRL_ON;
         }
         if (mIsAlted) {
-            mIsAlted = !mIsAlted;
-
+            updateAltState(false);
             System.out.println("alted will");
             meta = meta | KeyEvent.META_ALT_ON;
         }
         if (misShift) {
+            updateShiftState(false);
             meta = meta | KeyEvent.META_SHIFT_ON;
         }
 
@@ -230,6 +231,23 @@ public class SpcSoftBoard extends SoftKeyboard {
         ((SpcBoardView) mInputView).gesture = "";
         return;
 
+
+    }
+
+    void updateCtlState(boolean isCtrled){
+        this.mIsCtrled=isCtrled;
+        ((SpcBoardView)mInputView).isCtrled=isCtrled;
+
+    }
+    void updateAltState(boolean isAlted){
+        this.mIsAlted=isAlted;
+        ((SpcBoardView)mInputView).isAlted=isAlted;
+
+    }
+
+    void updateShiftState(boolean isShift){
+        this.misShift=isShift;
+        ((SpcBoardView)mInputView).setShifted(isShift);
 
     }
 
