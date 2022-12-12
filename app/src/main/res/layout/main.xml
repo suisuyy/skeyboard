@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_height="match_parent"
+	android:layout_width="match_parent"
+	android:orientation="vertical">
+
+	<EditText
+		android:layout_height="wrap_content"
+		android:inputType="textMultiLine"
+		android:layout_width="wrap_content"
+		android:ems="10"
+		android:id="@+id/test_edit_text"
+		android:hint="enable keyboard first,then allow file Access, finally select keyboard"/>
+
+	<EditText
+		android:layout_height="wrap_content"
+		android:inputType="number"
+		android:layout_width="wrap_content"
+		android:ems="10"
+		android:hint="only number here"/>
+
+
+	<Button
+		android:id="@+id/settingButtonIME"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="IME settings"
+		/>
+	<Button
+		android:id="@+id/allowFilePermitionButton"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="Allow File access"
+		/>
+
+
+	<Button
+		android:id="@+id/changeIMEButton"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="select keyboard"
+	/>
+	<Button
+		android:id="@+id/downloadpy"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="Download pinyin data"
+		/>
+
+
+
+
+</LinearLayout>
+
