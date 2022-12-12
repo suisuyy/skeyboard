@@ -20,7 +20,7 @@
 
         
         <service android:name="SpcSoftBoard"
-            android:label="@string/sime_name"
+            android:label="English by skey"
             android:permission="android.permission.BIND_INPUT_METHOD"
             android:exported="true">
             <intent-filter>
@@ -31,7 +31,7 @@
 
         <service
             android:name=".ShuangPinKeyboard"
-            android:label="双拼"
+            android:label="双拼by skey"
 
             android:permission="android.permission.BIND_INPUT_METHOD"
             android:exported="true">
@@ -46,7 +46,7 @@
 
      <service
             android:name=".PinyinKeybaord"
-            android:label="拼音"
+            android:label="拼音by skey"
 
             android:permission="android.permission.BIND_INPUT_METHOD"
             android:exported="true">
