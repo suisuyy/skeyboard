@@ -5,7 +5,7 @@
 
 1.点击IME settings按钮进入设置启用键盘,可选拼音,双拼,英文键盘,
 
-2.点击slect keyboard 选择刚刚添加的键盘
+2.点击slect keyboard 选择刚刚添加的键盘然后就可以输入了,使用ctl+space可以快速切换键盘
 
 3.点击allow file access允许安卓12以上写入读取内置存储
 
