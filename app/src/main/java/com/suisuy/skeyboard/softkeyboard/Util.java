@@ -86,9 +86,9 @@ public static JSONArray getCandidatesBaiduPinyinAsJSONArray(String pinyinStr){
         JSONArray candidateJsonArray=parseCandidatesAsJSONarray(getResposeAsString(apiURL));
         return candidateJsonArray;
     }
-    public static List getCandidatesFromGoogleSPin(String pinyinStr){
+    public static ArrayList getCandidatesFromGoogleSPin(String pinyinStr){
         String apiURL = "https://corsp.suisuy.eu.org/?https://inputtools.google.com/request?itc=zh-t-i0-pinyin-x0-shuangpin-ms&num=100&cp=0&cs=1&ie=utf-8&oe=utf-8&app=demopage&text="+pinyinStr;
-        List<String> candidatesList=new ArrayList<>();
+        ArrayList<String> candidatesList=new ArrayList<>();
         JSONArray candidateJsonArray=parseCandidatesAsJSONarray(getResposeAsString(apiURL));
         for(int i=0;i<candidateJsonArray.length();i++){
             try {
@@ -202,6 +202,32 @@ public static JSONArray getCandidatesBaiduPinyinAsJSONArray(String pinyinStr){
         return new JSONObject();
     }
 
+    public static ArrayList mergeTwoListOnebyOne(ArrayList lista, ArrayList listb){
+        int i;
+        ArrayList longerList;
+        ArrayList newList=new ArrayList();
+
+
+        if(lista.toArray().length>listb.toArray().length){
+            longerList=lista;
+        }
+        else{
+            longerList=listb;
+        }
+
+        int minLen=Math.min(lista.toArray().length,listb.toArray().length);
+        for(i=0;i<minLen;i++){
+            newList.add(lista.get(i));
+            newList.add(listb.get(i));
+        }
+        for(;i<longerList.toArray().length;i++){
+            newList.add(longerList.get(i));
+        }
+
+
+        return  newList;
+    }
+
 
     public static   String convertShuangPinToPinyin(String spStr){
         String pyStr="";
@@ -214,6 +240,9 @@ public static JSONArray getCandidatesBaiduPinyinAsJSONArray(String pinyinStr){
                         break;
                     case 'i': pyStr+="ch";
                         break;
+                    case 'o': pyStr+="";
+                        break;
+
                     default:
                         pyStr+=spStr.charAt(i);
 

@@ -27,6 +27,7 @@ public class ShuangPinKeyboard extends SpcSoftBoard {
     List<String> mPreloadCandiateList;
     JSONObject mPyDict;
     Handler mMainThreadHandler;
+    ExecutorService executor = Executors.newFixedThreadPool(1);
 
     LinearLayout mPinyinCandidateView;
     Button mTypedView;
@@ -97,6 +98,10 @@ public class ShuangPinKeyboard extends SpcSoftBoard {
                 super.handleCharacter(primaryCode,keyCodes);
             }
         }
+        else if(mstartKeyCode==';'){
+            this.updateTypedLetters(this.mTypedLetters+(char)mstartKeyCode);
+
+        }
         else if(Character.isLetter(mstartKeyCode)){
 
             this.updateTypedLetters(this.mTypedLetters+(char)mstartKeyCode);
@@ -137,12 +142,22 @@ public class ShuangPinKeyboard extends SpcSoftBoard {
         return button;
     }
     void displayCandidates(List<String> candidateList, LinearLayout candidatesView){
+        if(candidatesView==null || candidateList==null){
+            return;
+        }
         if(candidateList==null){
             candidateList=new ArrayList<>();
         }
         for (String can:
                 candidateList) {
-            candidatesView.addView(createCandidate(can)) ;
+            try {
+                candidatesView.addView(createCandidate(can)) ;
+
+            }
+            catch (Exception e){
+                System.out.println(e.toString());
+                return;
+            }
         }
     }
 
@@ -155,20 +170,28 @@ public class ShuangPinKeyboard extends SpcSoftBoard {
 
     }
 
-    void resetCandidatesView(){
+    int resetCandidatesView(){
 
         this.mPinyinCandidateView.removeAllViews();
         if(this.mTypedLetters.length()<=0){
             this.mPinyinCandidateView.addView(this.mShuangPinButton);
         }
-        this.mPinyinCandidateView.addView(this.mTypedView);
+        try{
+            this.mPinyinCandidateView.addView(this.mTypedView);
 
+        }
+        catch (Exception e){
+            System.out.println(e);
+            return 1;
+        }
+
+        return 0;
     }
 
     void updateTypedLetters(String newTyped){
 
-        ExecutorService executor = Executors.newFixedThreadPool(10);
-        executor.submit(() -> {
+
+        this.executor.submit(() -> {
             this.mTypedLetters=newTyped;
             this.mTypedView=this.createCandidate(newTyped);
             that.mMainThreadHandler.post(()->{
@@ -193,39 +216,20 @@ public class ShuangPinKeyboard extends SpcSoftBoard {
 
 
                 if(this.mCandidateList==oldCandidatlist || this.mCandidateList.toArray().length<=0){
-                    this.mCandidateList=Util.createStrListFromJsonArray(  Util.getCandidatesBaiduPinyinAsJSONArray(this.mTypedLetters) );
-                    this.mCandidateList.addAll( Util.createStrListFromJsonArray(  Util.getCandidatesBaiduPinyinAsJSONArray(Util.convertShuangPinToPinyin(this.mTypedLetters) ) ) );
-                    that.mMainThreadHandler.post(()->{
-                        that.displayCandidates();
-                    });
+                    this.displayCandidateFromBaidu();
                     if(this.isShuangPin){
-                        this.mCandidateList.addAll( Util.getCandidatesFromGoogleSPin(this.mTypedLetters) );
-                        JSONObject tmpObj=new JSONObject();
-                        try {
-                            tmpObj.put(this.mTypedLetters,Util.createJSONArrayFromStrList(this.mCandidateList));
-                            Util.savePinyinRecordToSdcard(tmpObj.toString());
-
-                        } catch (JSONException ex) {
-                            ex.printStackTrace();
-                        }
-
+                        this.displayCandidateFromGoogle();
+                        this.writeCandidateListToSdcard();
                     }
                     else{
-                        this.mCandidateList.addAll(
-                                Util.getCandidatesFromGooglePinyin(this.mTypedLetters)
-                        );
+                       this.displayCandidateFromGoogleFullPinyin();
                     }
-                    try {
-                        this.mPyDict.put(this.mTypedLetters,Util.createJSONArrayFromStrList(this.mCandidateList) );
-                    } catch (JSONException e1) {
-                        e1.printStackTrace();
-                    }
+
+
                 }
 
             }
-            that.mMainThreadHandler.post(()->{
-                that.displayCandidates();
-            });
+
 
 
         });
@@ -242,5 +246,64 @@ public class ShuangPinKeyboard extends SpcSoftBoard {
         }
 
         return ;
+    }
+
+    int displayCandidateFromBaidu(){
+        this.mCandidateList=Util.createStrListFromJsonArray(  Util.getCandidatesBaiduPinyinAsJSONArray(this.mTypedLetters) );
+        this.mCandidateList.addAll( Util.createStrListFromJsonArray(  Util.getCandidatesBaiduPinyinAsJSONArray(Util.convertShuangPinToPinyin(this.mTypedLetters) ) ) );
+        that.mMainThreadHandler.post(()->{
+            that.displayCandidates();
+        });
+
+
+
+        return  0;
+    }
+
+    int displayCandidateFromGoogle(){
+
+        ArrayList<String> candiateList;
+
+        candiateList=Util.getCandidatesFromGoogleSPin(this.mTypedLetters);
+        this.mCandidateList.addAll( candiateList );
+
+        that.mMainThreadHandler.post(()->{
+            that.displayCandidates();
+        });
+
+        return 0;
+    }
+
+    int displayCandidateFromGoogleFullPinyin(){
+        this.mCandidateList.addAll(
+                Util.getCandidatesFromGooglePinyin(this.mTypedLetters)
+        );
+        that.mMainThreadHandler.post(()->{
+            that.displayCandidates();
+        });
+
+        return 0;
+    }
+
+    int writeCandidateListToSdcard(){
+        if(this.mCandidateList.toArray().length<1){
+            return 1;
+        }
+        try {
+            this.mPyDict.put(this.mTypedLetters,Util.createJSONArrayFromStrList(this.mCandidateList) );
+        } catch (JSONException e1) {
+            e1.printStackTrace();
+        }
+
+                JSONObject tmpObj=new JSONObject();
+        try {
+            tmpObj.put(this.mTypedLetters,Util.createJSONArrayFromStrList(this.mCandidateList));
+            Util.savePinyinRecordToSdcard(tmpObj.toString());
+
+        } catch (JSONException ex) {
+            ex.printStackTrace();
+        }
+
+        return 0;
     }
 }

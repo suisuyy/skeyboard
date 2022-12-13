@@ -58,7 +58,6 @@ public class SpcBoardView extends KeyboardView {
 
     @Override
     public boolean onTouchEvent(MotionEvent me) {
-        System.out.println("latinkeyboardview.java: motion:"+String.valueOf(me.getAction()));
 
         switch (me.getAction()) {
 
@@ -68,7 +67,6 @@ public class SpcBoardView extends KeyboardView {
 
             case MotionEvent.ACTION_UP:
                 if(me.getY()-touchStartY>50){
-                    System.out.println("slid down");
                     gesture=GESTRUE_SLIDD_DOWN;
                 }
                 else if(me.getY()-touchStartY<-50){
@@ -84,14 +82,12 @@ public class SpcBoardView extends KeyboardView {
     //onkeyup and onkeydown not work either for skeyboard or hkeyborad
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        System.out.println("latinkeyboardview: onkeydown");
 
         return super.onKeyDown(keyCode, event);
     }
 
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
-        System.out.println("latinkeyboardview: onkeydown");
 
         return super.onKeyUp(keyCode, event);
     }
