@@ -20,9 +20,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class ShuangPinKeyboard extends SpcSoftBoard {
-    ShuangPinKeyboard that=this;
-    Boolean isShuangPin=true;
-    String mTypedLetters="";
+    ShuangPinKeyboard that = this;
+    Boolean isShuangPin = true;
+    String mTypedLetters = "";
     List<String> mCandidateList;
     List<String> mPreloadCandiateList;
     JSONObject mPyDict;
@@ -43,7 +43,7 @@ public class ShuangPinKeyboard extends SpcSoftBoard {
 
         this.mMainThreadHandler = HandlerCompat.createAsync(Looper.getMainLooper());
 
-        this.mCandidateList=new ArrayList<>();
+        this.mCandidateList = new ArrayList<>();
         this.initPydictObj();
 
         final LinearLayout keyboardParent = (LinearLayout) getLayoutInflater().inflate(
@@ -51,9 +51,12 @@ public class ShuangPinKeyboard extends SpcSoftBoard {
         super.mInputView = (SpcBoardView) keyboardParent.findViewById(R.id.keyboard);
         super.mInputView.setPreviewEnabled(false);
         this.debugtv = (TextView) keyboardParent.findViewById(R.id.debugtv);
-        this.mPinyinCandidateView =(LinearLayout) keyboardParent.findViewById(R.id.hscrollLayout);
-        this.mTypedView=createCandidate("");
-        this.mShuangPinButton=createCandidate(("双拼"));
+        this.mPinyinCandidateView = (LinearLayout) keyboardParent.findViewById(R.id.hscrollLayout);
+        this.mTypedView = createCandidate("mtyped");
+        this.mShuangPinButton = createCandidate(("双拼"));
+        this.mPinyinCandidateView.addView(this.mShuangPinButton);
+        this.mPinyinCandidateView.addView(this.mTypedView);
+
 
         super.mInputView.setOnKeyboardActionListener(this);
         super.setLatinKeyboard(super.mQwertyKeyboard);
@@ -61,14 +64,13 @@ public class ShuangPinKeyboard extends SpcSoftBoard {
         inputWindow = super.getWindow().getWindow();
 
 
-        this.resetCandidatesView();
         return keyboardParent;
     }
 
     @Override
     public void onKey(int primaryCode, int[] keyCodes) {
-        if(mstartKeyCode==SpcBoard.ASC2CODE_BACKSPACE){
-            if(this.mTypedLetters.length()>=1){
+        if (mstartKeyCode == SpcBoard.ASC2CODE_BACKSPACE) {
+            if (this.mTypedLetters.length() >= 1) {
                 this.updateTypedLetters(this.mTypedLetters.substring(0, this.mTypedLetters.length() - 1));
                 return;
             }
@@ -80,42 +82,33 @@ public class ShuangPinKeyboard extends SpcSoftBoard {
     @Override
     void handleCharacter(int primaryCode, int[] keyCodes) {
 
-        if (((SpcBoardView) mInputView).gesture == ((SpcBoardView) mInputView).GESTRUE_SLIDD_DOWN){
-            super.handleCharacter(primaryCode,keyCodes);
-        }
-        else if (((SpcBoardView) mInputView).gesture == ((SpcBoardView) mInputView).GESTRUE_SLIDD_UP){
-            super.handleCharacter(primaryCode,keyCodes);
-        }
-        else if(mIsCtrled | mIsAlted){
-            super.handleCharacter(primaryCode,keyCodes);
-        }
-
-        else if(mstartKeyCode==' '){
-            if(super.mIsCtrled){
+        if (((SpcBoardView) mInputView).gesture == ((SpcBoardView) mInputView).GESTRUE_SLIDD_DOWN) {
+            super.handleCharacter(primaryCode, keyCodes);
+        } else if (((SpcBoardView) mInputView).gesture == ((SpcBoardView) mInputView).GESTRUE_SLIDD_UP) {
+            super.handleCharacter(primaryCode, keyCodes);
+        } else if (mIsCtrled | mIsAlted) {
+            super.handleCharacter(primaryCode, keyCodes);
+        } else if (mstartKeyCode == ' ') {
+            if (super.mIsCtrled) {
                 handleLanguageSwitch();
+            } else {
+                super.handleCharacter(primaryCode, keyCodes);
             }
-            else{
-                super.handleCharacter(primaryCode,keyCodes);
-            }
-        }
-        else if(mstartKeyCode==';'){
-            this.updateTypedLetters(this.mTypedLetters+(char)mstartKeyCode);
+        } else if (mstartKeyCode == ';') {
+            this.updateTypedLetters(this.mTypedLetters + (char) mstartKeyCode);
 
-        }
-        else if(Character.isLetter(mstartKeyCode)){
+        } else if (Character.isLetter(mstartKeyCode)) {
 
-            this.updateTypedLetters(this.mTypedLetters+(char)mstartKeyCode);
+            this.updateTypedLetters(this.mTypedLetters + (char) mstartKeyCode);
 
-        }
-
-        else{
-            super.handleCharacter(primaryCode,keyCodes);
+        } else {
+            super.handleCharacter(primaryCode, keyCodes);
         }
 
 
     }
 
-    Button createCandidate(String text){
+    Button createCandidate(String text) {
         Button button = new Button(this);
         button.setText(text);
         button.setLayoutParams(new
@@ -126,110 +119,107 @@ public class ShuangPinKeyboard extends SpcSoftBoard {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(text=="双拼"){
-                    that.isShuangPin=true;
+                if (text == "双拼") {
+                    that.isShuangPin = true;
                     return;
                 }
-                if(text=="pinyin"){
-                    that.isShuangPin=false;
+                if (text == "pinyin") {
+                    that.isShuangPin = false;
                     return;
                 }
-                getCurrentInputConnection().commitText(text,1);
+                getCurrentInputConnection().commitText(button.getText(), 1);
                 updateTypedLetters("");
+                resetCandidatesView();
             }
         });
 
         return button;
     }
-    void displayCandidates(List<String> candidateList, LinearLayout candidatesView){
-        if(candidatesView==null || candidateList==null){
+
+    void displayCandidates(List<String> candidateList, LinearLayout candidatesView) {
+        if (candidatesView == null || candidateList == null || candidateList.toArray().length <= 0) {
             return;
         }
-        if(candidateList==null){
-            candidateList=new ArrayList<>();
+        if (candidateList == null) {
+            candidateList = new ArrayList<>();
         }
-        for (String can:
-                candidateList) {
-            try {
-                candidatesView.addView(createCandidate(can)) ;
+        try {
+            for (String can :
+                    candidateList) {
+
+
+                candidatesView.addView(createCandidate(can));
 
             }
-            catch (Exception e){
-                System.out.println(e.toString());
-                return;
-            }
+        } catch (Exception e) {
+            System.out.println(e.toString());
+            return;
         }
+
     }
 
-    void displayCandidates(){
+    void displayCandidates() {
         resetCandidatesView();
-        if(this.mCandidateList==null){
-            this.mCandidateList=new ArrayList<>();
+        if (this.mCandidateList == null) {
+            this.mCandidateList = new ArrayList<>();
         }
-        this.displayCandidates(this.mCandidateList,this.mPinyinCandidateView);
+        this.displayCandidates(this.mCandidateList, this.mPinyinCandidateView);
 
     }
 
-    int resetCandidatesView(){
+    int resetCandidatesView() {
 
-        this.mPinyinCandidateView.removeAllViews();
-        if(this.mTypedLetters.length()<=0){
-            this.mPinyinCandidateView.addView(this.mShuangPinButton);
-        }
-        try{
-            this.mPinyinCandidateView.addView(this.mTypedView);
+//        this.mPinyinCandidateView.removeAllViews();
 
+        int childCount = this.mPinyinCandidateView.getChildCount();
+        if (childCount > 3) {
+            for (int i = 3; i < childCount; i++) {
+                this.mPinyinCandidateView.removeViewAt(3);
+            }
         }
-        catch (Exception e){
-            System.out.println(e);
-            return 1;
-        }
+
 
         return 0;
     }
 
-    void updateTypedLetters(String newTyped){
-
+    void updateTypedLetters(String newTyped) {
+        this.mTypedLetters = newTyped;
+        this.mTypedView.setText(newTyped);
+        this.mCandidateList = new ArrayList<String>();
 
         this.executor.submit(() -> {
-            this.mTypedLetters=newTyped;
-            this.mTypedView=this.createCandidate(newTyped);
-            that.mMainThreadHandler.post(()->{
-                that.displayCandidates();
-            });
 
-            if(newTyped.length()<=0){
-                this.mCandidateList=new ArrayList<>();
+
+            if (newTyped.length() <= 0) {
                 return;
-            }
-
-            else{
-                List oldCandidatlist=this.mCandidateList;
+            } else {
+                List oldCandidatlist = this.mCandidateList;
                 try {
-                    this.mCandidateList=Util.createStrListFromJsonArray(
+                    this.mCandidateList = Util.createStrListFromJsonArray(
                             this.mPyDict.getJSONArray(this.mTypedLetters)
                     );
+                    that.mMainThreadHandler.post(() -> {
+                        that.displayCandidates();
+                    });
+                    this.displayCandidateFromBaidu();
+                    return;
+
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    this.mCandidateList=oldCandidatlist;
                 }
 
+                this.displayCandidateFromBaidu();
+                if (this.isShuangPin) {
+                    if(this.mTypedLetters.length()%2==0 && this.mTypedLetters.length()>0){
+                        this.displayCandidateFromGoogle(newTyped);
 
-                if(this.mCandidateList==oldCandidatlist || this.mCandidateList.toArray().length<=0){
-                    this.displayCandidateFromBaidu();
-                    if(this.isShuangPin){
-                        this.displayCandidateFromGoogle();
-                        this.writeCandidateListToSdcard();
                     }
-                    else{
-                       this.displayCandidateFromGoogleFullPinyin();
-                    }
-
-
+                } else {
+                    this.displayCandidateFromGoogleFullPinyin();
                 }
+
 
             }
-
 
 
         });
@@ -237,67 +227,65 @@ public class ShuangPinKeyboard extends SpcSoftBoard {
     }
 
 
-    void  initPydictObj(){
-        if(this.isShuangPin){
-            this.mPyDict=Util.getPinyinRecordFromSdcard();
+    int displayCandidateFromBaidu() {
+        if (this.mCandidateList == null) {
+            this.mCandidateList = new ArrayList<String>();
         }
-        else{
-            this.mPyDict=new JSONObject();
-        }
-
-        return ;
-    }
-
-    int displayCandidateFromBaidu(){
-        this.mCandidateList=Util.createStrListFromJsonArray(  Util.getCandidatesBaiduPinyinAsJSONArray(this.mTypedLetters) );
-        this.mCandidateList.addAll( Util.createStrListFromJsonArray(  Util.getCandidatesBaiduPinyinAsJSONArray(Util.convertShuangPinToPinyin(this.mTypedLetters) ) ) );
-        that.mMainThreadHandler.post(()->{
+        this.mCandidateList.addAll(0, Util.createStrListFromJsonArray(
+                Util.getCandidatesBaiduPinyinAsJSONArray(this.mTypedLetters)));
+        this.mCandidateList.addAll(0, Util.createStrListFromJsonArray(
+                Util.getCandidatesBaiduPinyinAsJSONArray(
+                        Util.convertShuangPinToPinyin(this.mTypedLetters))));
+        that.mMainThreadHandler.post(() -> {
             that.displayCandidates();
         });
 
 
-
-        return  0;
+        return 0;
     }
 
-    int displayCandidateFromGoogle(){
+    int displayCandidateFromGoogle(String pyStr) {
 
         ArrayList<String> candiateList;
 
-        candiateList=Util.getCandidatesFromGoogleSPin(this.mTypedLetters);
-        this.mCandidateList.addAll( candiateList );
+        candiateList = Util.getCandidatesFromGoogleSPin(this.mTypedLetters);
+        this.mCandidateList.addAll(candiateList);
+        this.writeCandidateListToSdcard(pyStr, candiateList);
 
-        that.mMainThreadHandler.post(()->{
+        that.mMainThreadHandler.post(() -> {
             that.displayCandidates();
+
         });
+
 
         return 0;
     }
 
-    int displayCandidateFromGoogleFullPinyin(){
+    int displayCandidateFromGoogleFullPinyin() {
         this.mCandidateList.addAll(
                 Util.getCandidatesFromGooglePinyin(this.mTypedLetters)
         );
-        that.mMainThreadHandler.post(()->{
+        that.mMainThreadHandler.post(() -> {
             that.displayCandidates();
         });
 
         return 0;
     }
 
-    int writeCandidateListToSdcard(){
-        if(this.mCandidateList.toArray().length<1){
+    int writeCandidateListToSdcard(String pyStr, ArrayList<String> candiateList) {
+        if (this.mCandidateList.toArray().length < 1) {
             return 1;
         }
         try {
-            this.mPyDict.put(this.mTypedLetters,Util.createJSONArrayFromStrList(this.mCandidateList) );
+            this.mPyDict.put(pyStr, Util.createJSONArrayFromStrList(candiateList));
         } catch (JSONException e1) {
             e1.printStackTrace();
         }
 
-                JSONObject tmpObj=new JSONObject();
+        JSONObject tmpObj = new JSONObject();
         try {
-            tmpObj.put(this.mTypedLetters,Util.createJSONArrayFromStrList(this.mCandidateList));
+            tmpObj.put(pyStr,
+                    Util.createJSONArrayFromStrList(candiateList));
             Util.savePinyinRecordToSdcard(tmpObj.toString());
 
         } catch (JSONException ex) {
@@ -306,4 +294,16 @@ public class ShuangPinKeyboard extends SpcSoftBoard {
 
         return 0;
     }
+
+    void initPydictObj() {
+        if (this.isShuangPin) {
+            this.mPyDict = Util.getPinyinRecordFromSdcard();
+        } else {
+            this.mPyDict = new JSONObject();
+        }
+
+        return;
+    }
 }
+
+

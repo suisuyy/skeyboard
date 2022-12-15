@@ -30,6 +30,8 @@ public class PinyinKeybaord extends  ShuangPinKeyboard {
         this.mPinyinCandidateView =(LinearLayout) keyboardParent.findViewById(R.id.hscrollLayout);
         this.mTypedView=createCandidate("");
         this.mShuangPinButton=createCandidate(("拼音"));
+        this.mPinyinCandidateView.addView(this.mShuangPinButton);
+        this.mPinyinCandidateView.addView(this.mTypedView);
 
         super.mInputView.setOnKeyboardActionListener(this);
         super.setLatinKeyboard(super.mQwertyKeyboard);

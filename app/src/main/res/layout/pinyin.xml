@@ -36,6 +36,8 @@
                 android:layout_width="wrap_content"
                 android:text="Text"
                 android:visibility="invisible"
+                android:height="0dp"
+                android:width="0dp"
                 android:id="@+id/debugtv"/>
 
 
