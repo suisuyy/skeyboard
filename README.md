@@ -1,4 +1,4 @@
-# skeyboard 安卓拼音／双拼云输入，
+# skeyboard 安卓 pc键盘+拼音／双拼云输入
 skeyboard是一个方便输入ctrl alt等等特殊key的安卓虚拟键盘,同时支持英文和简单的拼音 双拼
 
 使用方法,下载安装,打开https://github.com/suisuyy/skeyboard/raw/master/app/build/outputs/apk/debug/app-debug.apk
