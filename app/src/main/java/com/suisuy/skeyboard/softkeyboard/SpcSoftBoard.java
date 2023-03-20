@@ -19,9 +19,11 @@ package com.suisuy.skeyboard.softkeyboard;
 import android.content.Context;
 import android.inputmethodservice.Keyboard;
 import android.os.StrictMode;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -153,12 +155,31 @@ public class SpcSoftBoard extends SoftKeyboard {
     @Override
     public void swipeDown() {
 //        this.debugtv.setText("swipedow");
-//        WindowManager.LayoutParams lparas = inputWindow.getAttributes();
-//        lparas.x = 100;
-//        lparas.y = 200;
-//        lparas.width = 800;
-//        lparas.height = 600;
-//        inputWindow.setAttributes(lparas);
+        if(this.mIsFloat==true){
+            this.mIsFloat=false;
+
+            WindowManager.LayoutParams lparas = inputWindow.getAttributes();
+            Log.println(1,"windowparas",lparas.toString());
+            lparas.x = 0;
+            lparas.y = 0;
+            lparas.width = -1;
+            lparas.height = -1;
+            inputWindow.setAttributes(lparas);
+        }
+        else{
+
+
+            this.mIsFloat=true;
+
+            WindowManager.LayoutParams lparas = inputWindow.getAttributes();
+            Log.println(1,"windowparas",lparas.toString());
+            lparas.x = 0;
+            lparas.y = 0;
+            lparas.width = 600;
+            lparas.height = -1;
+            inputWindow.setAttributes(lparas);
+
+        }
     }
 
 

@@ -1,6 +1,7 @@
 package com.suisuy.skeyboard.softkeyboard;
 
 import android.os.Environment;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -21,6 +22,9 @@ import java.util.List;
 import java.util.Scanner;
 
 public class Util {
+    public static  String GOOGLE_SHUANGPING_API_URL="https://corsp.suisuy.eu.org/?https://inputtools.google.com/request?itc=zh-t-i0-pinyin-x0-shuangpin-ms&num=20&cp=0&cs=1&ie=utf-8&oe=utf-8&app=demopage&text=";
+    public static  String GOOGLE_PINYIN_API_URL="https://inputtools.google.cn/request?itc=zh-t-i0-pinyin&num=20&cp=0&cs=1&ie=utf-8&oe=utf-8&app=demopage&text=";
+    public static  String BAIDU_PINYIN_API_URL="https://olime.baidu.com/py?rn=0&pn=20&py=";
 
     public static void test() {
 
@@ -44,7 +48,7 @@ public class Util {
 
     }
 public static JSONArray getCandidatesBaiduPinyinAsJSONArray(String pinyinStr){
-        String apiURL = "https://olime.baidu.com/py?rn=0&pn=20&py="+pinyinStr;
+        String apiURL = BAIDU_PINYIN_API_URL+pinyinStr;
         JSONArray resultjsonArray=new JSONArray();
         JSONObject jsonObject;
     try {
@@ -66,7 +70,7 @@ public static JSONArray getCandidatesBaiduPinyinAsJSONArray(String pinyinStr){
 }
 
     public static List getCandidatesFromGooglePinyin(String pinyinStr){
-        String apiURL = "https://corsp.suisuy.eu.org/?https://inputtools.google.com/request?itc=zh-t-i0-pinyin&num=100&cp=0&cs=1&ie=utf-8&oe=utf-8&app=demopage&text="+pinyinStr;
+        String apiURL = GOOGLE_PINYIN_API_URL+pinyinStr;
         List<String> candidatesList=new ArrayList<>();
         JSONArray candidateJsonArray=parseCandidatesAsJSONarray(getResposeAsString(apiURL));
         for(int i=0;i<candidateJsonArray.length();i++){
@@ -81,13 +85,13 @@ public static JSONArray getCandidatesBaiduPinyinAsJSONArray(String pinyinStr){
     }
 
     public static JSONArray getCandidatesJSONArrayFromGoogleSPin(String pinyinStr){
-        String apiURL = "https://corsp.suisuy.eu.org/?https://inputtools.google.com/request?itc=zh-t-i0-pinyin-x0-shuangpin-ms&num=100&cp=0&cs=1&ie=utf-8&oe=utf-8&app=demopage&text="+pinyinStr;
+        String apiURL = GOOGLE_SHUANGPING_API_URL+pinyinStr;
         List<String> candidatesList=new ArrayList<>();
         JSONArray candidateJsonArray=parseCandidatesAsJSONarray(getResposeAsString(apiURL));
         return candidateJsonArray;
     }
     public static ArrayList getCandidatesFromGoogleSPin(String pinyinStr){
-        String apiURL = "https://corsp.suisuy.eu.org/?https://inputtools.google.com/request?itc=zh-t-i0-pinyin-x0-shuangpin-ms&num=100&cp=0&cs=1&ie=utf-8&oe=utf-8&app=demopage&text="+pinyinStr;
+        String apiURL = "https://corsp.suisuy.eu.org/?https://inputtools.google.com/request?itc=zh-t-i0-pinyin-x0-shuangpin-ms&num=20&cp=0&cs=1&ie=utf-8&oe=utf-8&app=demopage&text="+pinyinStr;
         ArrayList<String> candidatesList=new ArrayList<>();
         JSONArray candidateJsonArray=parseCandidatesAsJSONarray(getResposeAsString(apiURL));
         for(int i=0;i<candidateJsonArray.length();i++){
@@ -118,12 +122,15 @@ public static JSONArray getCandidatesBaiduPinyinAsJSONArray(String pinyinStr){
     public static String getResposeAsString(String url) {
         try {
             HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+            connection.setConnectTimeout(3000);
+            connection.setReadTimeout(3000);
             Scanner s = new Scanner(connection.getInputStream()).useDelimiter("\\A");
             String result = s.hasNext() ? s.next() : "";
             return result;
         } catch (MalformedURLException e) {
             e.printStackTrace();
         } catch (IOException e) {
+            Log.e("con timeout,maybe slow",e.toString());
             e.printStackTrace();
         }
 
@@ -184,9 +191,16 @@ public static JSONArray getCandidatesBaiduPinyinAsJSONArray(String pinyinStr){
             Scanner scanner = new Scanner(targetFile);
 
             while (scanner.hasNextLine()) {
+                try{
                 JSONObject singleRecordObj=new JSONObject(scanner.nextLine());
                 String akey=singleRecordObj.keys().next();
-                pyRecodObj.put(akey,singleRecordObj.getJSONArray(akey )  );
+
+                    pyRecodObj.put(akey,singleRecordObj.getJSONArray(akey )  );
+
+                }
+                catch (JSONException e){
+                    e.printStackTrace();
+                }
             }
 
             scanner.close();
@@ -194,8 +208,6 @@ public static JSONArray getCandidatesBaiduPinyinAsJSONArray(String pinyinStr){
             return  pyRecodObj;
 
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (JSONException e) {
             e.printStackTrace();
         }
 
@@ -297,9 +309,12 @@ public static JSONArray getCandidatesBaiduPinyinAsJSONArray(String pinyinStr){
                         break;
                     case 'x': pyStr+="ie";
                         break;
+                    case 'y': pyStr+="uai";
+                        break;
                     case 'z': pyStr+="ei";
                         break;
-
+                    case ';': pyStr+="ing";
+                        break;
                     default:
                         pyStr+=spStr.charAt(i);
 

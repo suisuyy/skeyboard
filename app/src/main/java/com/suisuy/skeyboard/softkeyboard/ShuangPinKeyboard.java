@@ -42,9 +42,9 @@ public class ShuangPinKeyboard extends SpcSoftBoard {
     public View onCreateInputView() {
 
         this.mMainThreadHandler = HandlerCompat.createAsync(Looper.getMainLooper());
-
-        this.mCandidateList = new ArrayList<>();
         this.initPydictObj();
+        this.mCandidateList = new ArrayList<>();
+
 
         final LinearLayout keyboardParent = (LinearLayout) getLayoutInflater().inflate(
                 R.layout.pinyin, null);
@@ -52,8 +52,8 @@ public class ShuangPinKeyboard extends SpcSoftBoard {
         super.mInputView.setPreviewEnabled(false);
         this.debugtv = (TextView) keyboardParent.findViewById(R.id.debugtv);
         this.mPinyinCandidateView = (LinearLayout) keyboardParent.findViewById(R.id.hscrollLayout);
-        this.mTypedView = createCandidate("mtyped");
         this.mShuangPinButton = createCandidate(("双拼"));
+        this.mTypedView = createCandidate("mtyped");
         this.mPinyinCandidateView.addView(this.mShuangPinButton);
         this.mPinyinCandidateView.addView(this.mTypedView);
 
@@ -63,8 +63,14 @@ public class ShuangPinKeyboard extends SpcSoftBoard {
 
         inputWindow = super.getWindow().getWindow();
 
-
         return keyboardParent;
+    }
+
+    //run every time keyboard show and cursor change
+    @Override
+    public void onWindowShown() {
+        super.onWindowShown();
+        return;
     }
 
     @Override
@@ -126,7 +132,8 @@ public class ShuangPinKeyboard extends SpcSoftBoard {
                 if (text == "pinyin") {
                     that.isShuangPin = false;
                     return;
-                }
+                 }
+
                 getCurrentInputConnection().commitText(button.getText(), 1);
                 updateTypedLetters("");
                 resetCandidatesView();
@@ -140,9 +147,7 @@ public class ShuangPinKeyboard extends SpcSoftBoard {
         if (candidatesView == null || candidateList == null || candidateList.toArray().length <= 0) {
             return;
         }
-        if (candidateList == null) {
-            candidateList = new ArrayList<>();
-        }
+
         try {
             for (String can :
                     candidateList) {
@@ -160,8 +165,9 @@ public class ShuangPinKeyboard extends SpcSoftBoard {
 
     void displayCandidates() {
         resetCandidatesView();
-        if (this.mCandidateList == null) {
+        if (this.mCandidateList == null || this.mCandidateList.toArray().length<=0) {
             this.mCandidateList = new ArrayList<>();
+            return;
         }
         this.displayCandidates(this.mCandidateList, this.mPinyinCandidateView);
 
@@ -187,35 +193,36 @@ public class ShuangPinKeyboard extends SpcSoftBoard {
         this.mTypedView.setText(newTyped);
         this.mCandidateList = new ArrayList<String>();
 
+        if(newTyped.length()<=0){
+            this.displayCandidates();
+            return;
+        }
+
+        List oldCandidatlist = this.mCandidateList;
+        try {
+            this.mCandidateList = Util.createStrListFromJsonArray(
+                    this.mPyDict.getJSONArray(this.mTypedLetters)
+            );
+
+            that.displayCandidates();
+            return;
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         this.executor.submit(() -> {
 
 
             if (newTyped.length() <= 0) {
                 return;
             } else {
-                List oldCandidatlist = this.mCandidateList;
-                try {
-                    this.mCandidateList = Util.createStrListFromJsonArray(
-                            this.mPyDict.getJSONArray(this.mTypedLetters)
-                    );
-                    that.mMainThreadHandler.post(() -> {
-                        that.displayCandidates();
-                    });
-                    this.displayCandidateFromBaidu();
-                    return;
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-                this.displayCandidateFromBaidu();
                 if (this.isShuangPin) {
-                    if(this.mTypedLetters.length()%2==0 && this.mTypedLetters.length()>0){
+                    if(newTyped.length()%2==0 && newTyped.length()>0){
                         this.displayCandidateFromGoogle(newTyped);
 
                     }
                 } else {
-                    this.displayCandidateFromGoogleFullPinyin();
+                    this.displayCandidateFromGoogleFullPinyin(newTyped);
                 }
 
 
@@ -248,9 +255,19 @@ public class ShuangPinKeyboard extends SpcSoftBoard {
 
         ArrayList<String> candiateList;
 
-        candiateList = Util.getCandidatesFromGoogleSPin(this.mTypedLetters);
-        this.mCandidateList.addAll(candiateList);
+        candiateList = Util.getCandidatesFromGoogleSPin(pyStr);
+        if(candiateList==null){
+            return 1;
+        }
         this.writeCandidateListToSdcard(pyStr, candiateList);
+
+        if(this.mCandidateList.toArray().length>=2){
+
+            candiateList.add(0,this.mCandidateList.get(0));
+            candiateList.add(1,this.mCandidateList.get(1));
+
+        }
+        this.mCandidateList=(candiateList);
 
         that.mMainThreadHandler.post(() -> {
             that.displayCandidates();
@@ -261,12 +278,27 @@ public class ShuangPinKeyboard extends SpcSoftBoard {
         return 0;
     }
 
-    int displayCandidateFromGoogleFullPinyin() {
-        this.mCandidateList.addAll(
-                Util.getCandidatesFromGooglePinyin(this.mTypedLetters)
-        );
+    int displayCandidateFromGoogleFullPinyin(String pyStr) {
+        ArrayList<String> candiateList;
+
+        candiateList = (ArrayList<String>) Util.getCandidatesFromGooglePinyin(pyStr);
+        if(candiateList==null){
+            return 1;
+        }
+
+
+        if(this.mCandidateList.toArray().length>=2){
+
+            candiateList.add(0,this.mCandidateList.get(0));
+            candiateList.add(1,this.mCandidateList.get(1));
+
+        }
+
+        this.mCandidateList=(candiateList);
+
         that.mMainThreadHandler.post(() -> {
             that.displayCandidates();
+
         });
 
         return 0;

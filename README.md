@@ -1,4 +1,4 @@
-# skeyboard 安卓 pc键盘+拼音／双拼云输入
+# skeyboard
 skeyboard是一个方便输入ctrl alt等等特殊key的安卓虚拟键盘,同时支持英文和简单的拼音 双拼
 
 使用方法,下载安装,打开https://github.com/suisuyy/skeyboard/raw/master/app/build/outputs/apk/debug/app-debug.apk
@@ -14,7 +14,7 @@ skeyboard是一个方便输入ctrl alt等等特殊key的安卓虚拟键盘,同�
 3.点击allow file access允许安卓12以上写入读取内置存储
 
 
-# English guide ( trranslate by gpt :)
+# English guide ( translate by gpt :)
 
 skeyboard is An Android virtual keyboard that makes it easy to input special keys such as Ctrl, Alt, and so on. It also supports English and simple pinyin and shuangpin.
 

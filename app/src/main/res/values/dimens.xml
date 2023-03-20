@@ -19,11 +19,11 @@
 -->
 
 <resources>
-    <dimen name="key_height">60dp</dimen>
+    <dimen name="key_height">8mm</dimen>
     <dimen name="candidate_font_size">50dp</dimen>
 
-    <dimen name="candidate_font_height">16dp</dimen>
+    <dimen name="candidate_font_height">10dp</dimen>
 
-    <dimen name="candidate_vertical_padding">6dp</dimen>
+    <dimen name="candidate_vertical_padding">1dp</dimen>
     <dimen name="fab_margin">0dp</dimen>
 </resources>

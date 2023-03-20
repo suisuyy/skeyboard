@@ -129,34 +129,7 @@ public class MainActivity extends Activity {
                         e.printStackTrace();
                     }
 
-                    try {
-                        writer = new FileOutputStream(targetFile,true);
-                        for(char i='a';i<='z';i++){
-                            for(char j='a';j<='z';j++){
-                                for(char k='a';k<'z';k++){
-                                    for(char l='a';l<'z';l++){
-                                        JSONObject pyJsonObj=new JSONObject();
-                                        try {
-                                            pyJsonObj.put(l+""+k+""+j+""+i, Util.getCandidatesJSONArrayFromGoogleSPin(l+""+k+""+j+""+i));
-                                            try  {
-                                                writer.write((pyJsonObj.toString()+"\n").getBytes(StandardCharsets.UTF_8));
-                                            } catch (IOException e) {
-                                                e.printStackTrace();
-                                            }
 
-
-                                        } catch (JSONException e) {
-                                            e.printStackTrace();
-                                        }
-                                    }
-                                }
-
-                            }
-
-                        }
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    }
 
                 });
 
